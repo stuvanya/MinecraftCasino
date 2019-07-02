@@ -5,8 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import ru.stuvanya.casino.Messages;
 import ru.stuvanya.casino.MinecraftCasino;
+import ru.stuvanya.casino.Utils;
 import ru.stuvanya.casino.model.GameState;
 import ru.stuvanya.casino.model.Model;
 
@@ -31,19 +31,30 @@ public class SlotMashine {
 	public GameState getCurrentState () {
 		return this.state;
 	}
+	
+	public void setCurrentState (GameState _state) {
+		this.state = _state;
+	}
 
 	public void newSpin (Player p) {
 		if (state == GameState.IN_GAME) {
-			Messages.mashineInGame(p);
+			Utils.mashineInGame(p);
 			return;
 		} else if (state == GameState.DISABLED) {
-			Messages.mashineDisabled(p);
+			Utils.mashineDisabled(p);
 			return;
 		}
+		if (!Utils.canGetNewSpin(p, this.bet)) {
+			Utils.notEnoughtMoney(p, bet);
+		}
+		Utils.makedBet(p, bet);
+
 		currentPlayer = p;
-		state = GameState.IN_GAME;
+		setCurrentState(GameState.IN_GAME);
+
 		double win = gameModel.getNewSpin(this.bet);
 		Material[][] matrix = gameModel.getItemMatrix();
+
 		long dur = spin();
 		new BukkitRunnable()
 		{
@@ -58,11 +69,11 @@ public class SlotMashine {
 		}.runTaskLater(MinecraftCasino.plugin, dur);
 
 	}
-	
+
 	public Player getCurrentPlayer () {
 		return currentPlayer;
 	}
-	
+
 	public Location getButtonLocation() {
 		return buttonPos;
 	}
@@ -72,16 +83,18 @@ public class SlotMashine {
 	}
 
 	private void takeWin(double win) {
+		Utils.takeWin(currentPlayer, win);
 		finishGame();
 	}
 
 	private void loose() {
+		Utils.loose(currentPlayer);
 		finishGame();
 	}
 
 	private void finishGame() {
 		currentPlayer = null;
-		state = GameState.WAITING;
+		setCurrentState(GameState.WAITING);
 	}
 
 	private void setMatrix(Material[][] matrix) {
