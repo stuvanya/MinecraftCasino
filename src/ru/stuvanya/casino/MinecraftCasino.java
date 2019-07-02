@@ -6,12 +6,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class MinecraftCasino  extends JavaPlugin {
 	public static Plugin plugin = Bukkit.getPluginManager().getPlugin("MinecraftCasino");
-	public void onEnable()
-	{
 
+	@Override
+	public void onEnable() {
+		Bukkit.getPluginManager().registerEvents(new Listeners(), this);
+		Settings.init();
 	}
-	public void onDisable()
-	{
+
+	@Override
+	public void onDisable() {
 
 	}
 }
