@@ -20,38 +20,28 @@ public class Model {
 
 	private static int[][] payTable =
 		{
-				{0, 0, 0,   10},//cherry0
-				{0, 0, 0,   10},//lemon1
-				{0, 0, 0,   10},//Peach2
-				{0, 0, 0,   20},//plum3
-				{0, 0, 0,   20},//Strawberry4
-				{0, 0, 0,   20},//Raspberry5
-				{0, 0, 0,   40},//Bell6
-				{0, 0, 0,   40},//watermelon7
-				{0, 0, 0,   40},//Grape8
-				{0, 0, 0,   80},//Seven9
-				{0, 0, 0,   80},//Star10
-				{0, 0, 0,  400},//Sun11
-				{0, 0, 0,  800},//Coin12
-				{0, 0, 0, 1600},//Fenix13
+			{0, 0, 0,  25}, //lemon0
+	        {0, 0, 0,  25}, //cherry1
+	        {0, 0, 0,  50}, //plum3
+	        {0, 0, 0,  50}, //orange2
+	        {0, 0, 0, 100}, //Bell4
+	        {0, 0, 0, 150}, //grape
+	        {0, 0, 0, 200}, //watermelon6
+	        {0, 0, 0, 250}, //Seven7
+	        {0, 0, 0, 375}, //star8
 		};
 
 	@SuppressWarnings("serial")
 	private static Map<Integer, Material> items = new HashMap<Integer, Material>() {{
 		put(0, Material.DIRT);
 		put(1, Material.SAND);
-		put(2, Material.STONE);
-		put(3, Material.COBBLESTONE);
-		put(4, Material.STONE);
-		put(5, Material.STONE);
-		put(6, Material.STONE);
-		put(7, Material.STONE);
-		put(8, Material.STONE);
-		put(9, Material.STONE);
-		put(10, Material.STONE);
-		put(11, Material.STONE);
-		put(12, Material.STONE);
-		put(13, Material.STONE);
+		put(2, Material.WOOD);
+		put(3, Material.STONE);
+		put(4, Material.COBBLESTONE);
+		put(5, Material.IRON_BLOCK);
+		put(6, Material.GOLD_BLOCK);
+		put(7, Material.DIAMOND_BLOCK);
+		put(8, Material.EMERALD_BLOCK);
 	}};
 
 	private int[][] curMatrix;
@@ -65,6 +55,7 @@ public class Model {
 	}
 
 	public double getNewSpin(int bet) {
+		System.out.println("Get new spin, bet: " + bet);
 		win = 0;
 		generateRandomMatrix();
 		calculateWin(bet);
@@ -99,17 +90,20 @@ public class Model {
 				curItemMatrix[row][col] = items.get(curMatrix[row][col]);
 			}
 		}
+		System.out.println("GeneratedMatrix: " + curMatrix);
 	}
 
 	private void calculateWin(int bet) {
 		for (int row = 0; row < curMatrix.length; row ++) {
 			int symbol = curMatrix[row][0];
 			for (int row2 = 0; row2 < curMatrix.length; row2 ++) {
+				//KOSTILL, переделать под матрицы разного размера
 				if (curMatrix[row2][1] == symbol && curMatrix[row2][2] == symbol) {
 					win += (double)payTable[symbol][3] * ((double)bet / 10.0);
 				}
 			}
 		}
+		System.out.println("Calculated win: " + win);
 	}
 
 }

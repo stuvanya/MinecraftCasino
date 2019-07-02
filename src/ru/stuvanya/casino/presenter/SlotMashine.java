@@ -5,17 +5,18 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import ru.stuvanya.casino.Messages;
 import ru.stuvanya.casino.MinecraftCasino;
 import ru.stuvanya.casino.model.GameState;
 import ru.stuvanya.casino.model.Model;
 
 public class SlotMashine {
 	private GameState state;
-	public Location buttonPos;
-	public Player currentPlayer;
-	public Location slotTopLocation;
-	public Location slotBottomLocation;
-	public int bet;
+	private Location buttonPos;
+	private Player currentPlayer;
+	private Location slotTopLocation;
+	private Location slotBottomLocation;
+	private int bet;
 	private Model gameModel;
 
 	public SlotMashine (Location _buttonPos, Location _slotTopLocation, Location _slotBottomLocation, int _bet) {
@@ -32,8 +33,13 @@ public class SlotMashine {
 	}
 
 	public void newSpin (Player p) {
-		if (state != GameState.WAITING)
+		if (state == GameState.IN_GAME) {
+			Messages.mashineInGame(p);
 			return;
+		} else if (state == GameState.DISABLED) {
+			Messages.mashineDisabled(p);
+			return;
+		}
 		currentPlayer = p;
 		state = GameState.IN_GAME;
 		double win = gameModel.getNewSpin(this.bet);
@@ -51,6 +57,14 @@ public class SlotMashine {
 			}
 		}.runTaskLater(MinecraftCasino.plugin, dur);
 
+	}
+	
+	public Player getCurrentPlayer () {
+		return currentPlayer;
+	}
+	
+	public Location getButtonLocation() {
+		return buttonPos;
 	}
 
 	private long spin() {
