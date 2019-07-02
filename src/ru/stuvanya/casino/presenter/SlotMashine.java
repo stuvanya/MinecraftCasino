@@ -1,5 +1,6 @@
 package ru.stuvanya.casino.presenter;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -31,7 +32,7 @@ public class SlotMashine {
 	public GameState getCurrentState () {
 		return this.state;
 	}
-	
+
 	public void setCurrentState (GameState _state) {
 		this.state = _state;
 	}
@@ -67,7 +68,6 @@ public class SlotMashine {
 					loose();
 			}
 		}.runTaskLater(MinecraftCasino.plugin, dur);
-
 	}
 
 	public Player getCurrentPlayer () {
@@ -98,11 +98,17 @@ public class SlotMashine {
 	}
 
 	private void setMatrix(Material[][] matrix) {
-		for (int row = 0; row < matrix.length; row++) {
-			for (int col = 0; col < matrix[0].length; col++) {
-				//пихаем блоки по координатам
-			}
-		}
+		Location startLoc = slotBottomLocation;
+		Location addLoc;
+
+		if (slotTopLocation.getBlockX() == slotBottomLocation.getBlockX())
+			addLoc = new Location (null, 0, 1, 1);
+		else
+			addLoc = new Location (null, 1, 1, 0);
+
+		for (int row = 0; row < matrix.length; row++)
+			for (int col = 0; col < matrix[0].length; col++)
+				slotBottomLocation.getWorld().getBlockAt(startLoc.add(addLoc)).setType(matrix[row][col]);
 	}
 
 
