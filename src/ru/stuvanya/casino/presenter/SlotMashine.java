@@ -12,49 +12,49 @@ import ru.stuvanya.casino.model.GameState;
 import ru.stuvanya.casino.model.Model;
 
 public class SlotMashine {
-	private GameState state;
-	private Location buttonPos;
-	private Player currentPlayer;
-	private Location slotTopLocation;
-	private Location slotBottomLocation;
-	private int bet;
-	private Model gameModel;
+	private GameState _state;
+	private Location _buttonPos;
+	private Player _currentPlayer;
+	private Location _slotTopLocation;
+	private Location _slotBottomLocation;
+	private int _bet;
+	private Model _gameModel;
 
-	public SlotMashine (Location _buttonPos, Location _slotTopLocation, Location _slotBottomLocation, int _bet) {
-		this.buttonPos = _buttonPos;
-		this.slotTopLocation = _slotTopLocation;
-		this.slotBottomLocation = _slotBottomLocation;
-		this.state = GameState.WAITING;
-		this.gameModel = new Model();
-		this.bet = _bet;
+	public SlotMashine (Location buttonPos, Location slotTopLocation, Location slotBottomLocation, int bet) {
+		this._buttonPos = buttonPos;
+		this._slotTopLocation = slotTopLocation;
+		this._slotBottomLocation = slotBottomLocation;
+		this._state = GameState.WAITING;
+		this._gameModel = new Model();
+		this._bet = bet;
 	}
 
 	public GameState getCurrentState () {
-		return this.state;
+		return this._state;
 	}
 
-	public void setCurrentState (GameState _state) {
-		this.state = _state;
+	public void setCurrentState (GameState state) {
+		this._state = state;
 	}
 
 	public void newSpin (Player p) {
-		if (state == GameState.IN_GAME) {
+		if (_state == GameState.IN_GAME) {
 			Utils.mashineInGame(p);
 			return;
-		} else if (state == GameState.DISABLED) {
+		} else if (_state == GameState.DISABLED) {
 			Utils.mashineDisabled(p);
 			return;
 		}
-		if (!Utils.canGetNewSpin(p, this.bet)) {
-			Utils.notEnoughtMoney(p, bet);
+		if (!Utils.canGetNewSpin(p, _bet)) {
+			Utils.notEnoughtMoney(p, _bet);
 		}
-		Utils.makedBet(p, bet);
+		Utils.makedBet(p, _bet);
 
-		currentPlayer = p;
+		_currentPlayer = p;
 		setCurrentState(GameState.IN_GAME);
 
-		double win = gameModel.getNewSpin(this.bet);
-		Material[][] matrix = gameModel.getItemMatrix();
+		double win = _gameModel.getNewSpin(_bet);
+		Material[][] matrix = _gameModel.getItemMatrix();
 
 		long dur = spin();
 		new BukkitRunnable()
@@ -71,11 +71,11 @@ public class SlotMashine {
 	}
 
 	public Player getCurrentPlayer () {
-		return currentPlayer;
+		return _currentPlayer;
 	}
 
 	public Location getButtonLocation() {
-		return buttonPos;
+		return _buttonPos;
 	}
 
 	private long spin() {
@@ -83,32 +83,32 @@ public class SlotMashine {
 	}
 
 	private void takeWin(double win) {
-		Utils.takeWin(currentPlayer, win);
+		Utils.takeWin(_currentPlayer, win);
 		finishGame();
 	}
 
 	private void loose() {
-		Utils.loose(currentPlayer);
+		Utils.loose(_currentPlayer);
 		finishGame();
 	}
 
 	private void finishGame() {
-		currentPlayer = null;
+		_currentPlayer = null;
 		setCurrentState(GameState.WAITING);
 	}
 
 	private void setMatrix(Material[][] matrix) {
-		Location startLoc = slotBottomLocation;
+		Location startLoc = _slotBottomLocation;
 		Location addLoc;
 
-		if (slotTopLocation.getBlockX() == slotBottomLocation.getBlockX())
+		if (_slotTopLocation.getBlockX() == _slotBottomLocation.getBlockX())
 			addLoc = new Location (null, 0, 1, 1);
 		else
 			addLoc = new Location (null, 1, 1, 0);
 
 		for (int row = 0; row < matrix.length; row++)
 			for (int col = 0; col < matrix[0].length; col++)
-				slotBottomLocation.getWorld().getBlockAt(startLoc.add(addLoc)).setType(matrix[row][col]);
+				_slotBottomLocation.getWorld().getBlockAt(startLoc.add(addLoc)).setType(matrix[row][col]);
 	}
 
 
